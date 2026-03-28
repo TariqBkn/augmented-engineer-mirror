@@ -1,0 +1,152 @@
+{
+  // ============================================================
+  // Module 5 — Security & Trust configuration
+  // ============================================================
+  // Philosophy: conservative by default, relaxed only where proven safe.
+  // The agent runs with YOUR privilege level. Never auto-approve
+  // anything that could affect production, secrets, or system state.
+
+  // ── File edits auto-approval ─────────────────────────────────
+  // Only auto-approve edits to source code and documentation files
+  // inside the project workspace. Never approve edits to config,
+  // secrets, or files outside the working directory.
+  "chat.tools.edits.autoApprove": [
+    "**/*.java",
+    "**/*.kt",
+    "**/*.kts",
+    "**/*.gradle",
+    "**/*.xml",
+    "**/*.json",
+    "**/*.yaml",
+    "**/*.yml",
+    "**/*.md",
+    "**/*.sql",
+    "**/*.properties",
+    "**/*.txt"
+  ],
+
+  // ── URL auto-approval ────────────────────────────────────────
+  // Only allow fetching from trusted, read-only documentation sources.
+  "chat.tools.urls.autoApprove": [
+    "https://docs.spring.io/*",
+    "https://docs.gradle.org/*",
+    "https://javadoc.io/*",
+    "https://central.sonatype.com/*",
+    "https://context7.com/*"
+  ],
+
+  // ── Terminal commands auto-approval ──────────────────────────
+  // Approved: read-only navigation, git reads, gradle build/test,
+  //           java tooling, safe file inspection.
+  // Blocked:  anything destructive, network ops, process control,
+  //           permission changes, git push/pull/reset.
+  "chat.tools.terminal.autoApprove": {
+
+    // === Navigation & File Inspection ===
+    "cd": true,
+    "echo": true,
+    "ls": true,
+    "pwd": true,
+    "cat": true,
+    "head": true,
+    "tail": true,
+    "wc": true,
+    "grep": true,
+    "find": true,
+    "/^find\\b.*-(delete|exec|execdir|fprint|fprintf|fls|ok|okdir)\\b/": false,
+    "tree": true,
+    "/^tree\\b.*-o\\b/": false,
+    "stat": true,
+    "file": true,
+    "which": true,
+    "du": true,
+    "df": true,
+    "nl": true,
+    "sort": true,
+    "/^sort\\b.*-(o|S)\\b/": false,
+    "column": true,
+    "date": true,
+    "/^date\\b.*(-s|--set)\\b/": false,
+    "sleep": true,
+    "basename": true,
+    "dirname": true,
+
+    // === Git — Read Operations ===
+    "git status": true,
+    "git log": true,
+    "git show": true,
+    "git diff": true,
+    "git grep": true,
+    "git branch": true,
+    "git rev-parse": true,
+    "/^git branch\\b.*-(d|D|m|M|-delete|-force)\\b/": false,
+
+    // === Git — Write Operations (TDD workflow) ===
+    "git add": true,
+    "git commit": true,
+    "/^git commit\\b.*--amend\\b/": false,
+    "git checkout": true,
+    "/^git checkout\\b.*-b\\b/": true,
+    "git switch": true,
+    "/^git switch\\b.*-c\\b/": true,
+    "git restore": true,
+    "git stash": true,
+    "/^git stash\\b.*(drop|clear)\\b/": false,
+    "git tag": true,
+    "/^git tag\\b.*-(d|f|-delete|-force)\\b/": false,
+
+    // === Git — Blocked (remote operations & destructive) ===
+    "git push": false,
+    "git pull": false,
+    "git fetch": false,
+    "git merge": false,
+    "git rebase": false,
+    "git reset": false,
+    "/^git reset\\b.*--hard\\b/": false,
+
+    // === Gradle ===
+    "./gradlew": true,
+    "gradlew": true,
+    "gradlew.bat": true,
+    "/^\\.\\/gradlew\\b.*(build|test|check|clean|assemble|jar|bootJar|classes|testClasses)\\b/": true,
+    "/^gradlew\\b.*(build|test|check|clean|assemble|jar|bootJar|classes|testClasses)\\b/": true,
+    "/^\\.\\/gradlew\\b.*(publish|upload|deploy|release)\\b/": false,
+    "/^gradlew\\b.*(publish|upload|deploy|release)\\b/": false,
+
+    // === Java ===
+    "java": true,
+    "javac": true,
+    "javap": true,
+    "jps": true,
+    "jstack": true,
+    "jmap": false,
+
+    // === Python (for skill validation scripts) ===
+    "python": true,
+    "/^python\\b.*validate_issue_format\\.py\\b/": true,
+    "/^python\\b.*(install|setup|pip)\\b/": false,
+
+    // === Blocked: Destructive file operations ===
+    "rm": false,
+    "/^rm\\b.*(-r|-R|--recursive|-rf|-fr)\\b/": false,
+    "rmdir": false,
+    "del": false,
+    "dd": false,
+
+    // === Blocked: Network operations ===
+    "curl": false,
+    "wget": false,
+
+    // === Blocked: Process management ===
+    "kill": false,
+    "pkill": false,
+
+    // === Blocked: Permission changes ===
+    "chmod": false,
+    "chown": false,
+
+    // === Blocked: Dangerous shell patterns ===
+    "eval": false,
+    "xargs": false
+  }
+}
