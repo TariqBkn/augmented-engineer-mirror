@@ -1,0 +1,43 @@
+{
+  // Tool Sets for the Buvette du Bel'Air project
+  // Activate a tool set in Copilot Chat to load only the relevant tools
+  // and preserve context window space.
+  // Doc: https://code.visualstudio.com/docs/copilot/chat/mcp-servers#_tool-sets
+
+  "dev-workflow": {
+    // Core development workflow: documentation lookup + semantic code navigation
+    // + structured reasoning. Use for day-to-day feature implementation.
+    "tools": [
+      "context7_resolve-library-id",
+      "context7_get-library-docs",
+      "serena_get_symbols_overview",
+      "serena_find_symbol",
+      "serena_search_for_pattern",
+      "sequentialthinking"
+    ]
+  },
+
+  "github-workflow": {
+    // Use when working with GitHub: reading issues, creating PRs, browsing repos.
+    "tools": [
+      "github_list_issues",
+      "github_get_issue",
+      "github_create_issue",
+      "github_list_pull_requests",
+      "github_create_pull_request"
+    ]
+  },
+
+  "code-analysis": {
+    // Use for deep code analysis, architecture review, or refactoring sessions.
+    // Combines semantic navigation with structured step-by-step reasoning.
+    "tools": [
+      "serena_get_symbols_overview",
+      "serena_find_symbol",
+      "serena_get_document_symbols",
+      "serena_search_for_pattern",
+      "sequentialthinking"
+    ]
+  }
+
+}
