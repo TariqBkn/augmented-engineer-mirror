@@ -21,4 +21,37 @@ class ConsulterSoldeTokensTest {
         assertThat(result.tokensBoisson()).isEqualTo(6);
         assertThat(result.tokensNourriture()).isEqualTo(9);
     }
+
+    static class FakeTokenRepository {
+        private SoldeTokensFestivalier solde;
+
+        void add(SoldeTokensFestivalier soldeTokensFestivalier) {
+            this.solde = soldeTokensFestivalier;
+        }
+
+        SoldeTokensFestivalier findByFestivalierId(String festivalierId) {
+            if (solde != null && solde.festivalierId().equals(festivalierId)) {
+                return solde;
+            }
+            throw new IllegalArgumentException("Festivalier introuvable");
+        }
+    }
+
+    record SoldeTokensFestivalier(String festivalierId, int tokensBoisson, int tokensNourriture) {
+    }
+
+    record ConsulterSoldeTokensQuery(String festivalierId) {
+    }
+
+    static class ConsulterSoldeTokensUseCase {
+        private final FakeTokenRepository tokenRepository;
+
+        ConsulterSoldeTokensUseCase(FakeTokenRepository tokenRepository) {
+            this.tokenRepository = tokenRepository;
+        }
+
+        SoldeTokensFestivalier consulterSolde(ConsulterSoldeTokensQuery query) {
+            return tokenRepository.findByFestivalierId(query.festivalierId());
+        }
+    }
 }
