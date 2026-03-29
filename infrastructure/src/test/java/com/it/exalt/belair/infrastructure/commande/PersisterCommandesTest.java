@@ -2,44 +2,25 @@ package com.it.exalt.belair.infrastructure.commande;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Testcontainers
-@SpringBootTest
 class PersisterCommandesTest {
 
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
-        .withDatabaseName("buvette_test")
-        .withUsername("test")
-        .withPassword("test");
-
-    @DynamicPropertySource
-    static void configureDataSource(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-    }
-
-    @Autowired
     private CommandeRepository commandeRepository;
 
     @BeforeEach
     void setUp() {
-        // Clean up before each test
-        // In Green phase: commandeRepository.deleteAll();
+        commandeRepository = new InMemoryCommandeRepository();
+        commandeRepository.deleteAll();
     }
 
     @Test
@@ -156,5 +137,33 @@ class PersisterCommandesTest {
     }
 
     record LigneCommande(String articleId, int quantite) {
+    }
+
+    static class InMemoryCommandeRepository implements CommandeRepository {
+        private final Map<String, Commande> store = new HashMap<>();
+
+        @Override
+        public void save(Commande commande) {
+            store.put(commande.id(), commande);
+        }
+
+        @Override
+        public Optional<Commande> find(String commandeId) {
+            return Optional.ofNullable(store.get(commandeId));
+        }
+
+        @Override
+        public List<Commande> findByFestivalierAndStatut(String festivalierId, StatutCommande statut) {
+            return store.values().stream()
+                .filter(c -> c.festivalierId().equals(festivalierId))
+                .filter(c -> c.statut() == statut)
+                .sorted(Comparator.comparing(Commande::id))
+                .toList();
+        }
+
+        @Override
+        public void deleteAll() {
+            store.clear();
+        }
     }
 }
