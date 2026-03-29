@@ -5,3 +5,8 @@
 
 # Ignore Gradle build output directory
 build
+domain/build_tmp/com/it/exalt/belair/domain/commande/LigneCommandeRequest.class
+domain/build_tmp/com/it/exalt/belair/domain/commande/LigneCommandeResponse.class
+domain/build_tmp/com/it/exalt/belair/domain/commande/PasserCommandeCommand.class
+domain/build_tmp/com/it/exalt/belair/domain/commande/PasserCommandeResponse.class
+domain/build_tmp/com/it/exalt/belair/domain/commande/PasserCommandeUseCase.class

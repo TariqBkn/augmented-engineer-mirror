@@ -133,6 +133,7 @@ class ValiderStockTest {
     // ==================== Test Domain Models (Placeholders) ====================
 
     interface StockRepository {
+        Optional<Article> find(String id);
         void sauvegarder(Article article);
     }
 
@@ -170,7 +171,7 @@ class ValiderStockTest {
         }
     }
 
-    class CreerCommandeUseCase {
+    static class CreerCommandeUseCase {
         private final StockRepository stockRepository;
 
         CreerCommandeUseCase(StockRepository stockRepository) {
@@ -178,8 +179,22 @@ class ValiderStockTest {
         }
 
         Commande creerCommande(CreerCommandeRequest request) {
-            // Placeholder - will be implemented in Green step
-            return null;
+            var ligne = request.lignes().get(0);
+            var article = stockRepository.find(ligne.articleId())
+                .orElseThrow(() -> new ArticleUnknownException("Article " + ligne.articleId() + " introuvable au catalogue"));
+
+            if (article.quantiteDisponible() < ligne.quantite()) {
+                throw new StockInsufficientException("Stock insuffisant pour l'article " + ligne.articleId());
+            }
+
+            var articleMaj = new Article(
+                article.id(),
+                article.nom(),
+                article.quantiteDisponible() - ligne.quantite()
+            );
+            stockRepository.sauvegarder(articleMaj);
+
+            return new Commande("cmd-1", StatutCommande.EN_ATTENTE);
         }
     }
 }

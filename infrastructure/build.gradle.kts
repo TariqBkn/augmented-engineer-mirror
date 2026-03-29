@@ -10,4 +10,10 @@ plugins {
 
 dependencies {
     implementation(project(":domain"))
+
+    testImplementation("org.assertj:assertj-core:3.24.2")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.0")
+    testImplementation("org.testcontainers:junit-jupiter:1.19.0")
+    testImplementation("org.testcontainers:testcontainers:1.19.0")
+    testImplementation("org.testcontainers:postgresql:1.19.0")
 }
