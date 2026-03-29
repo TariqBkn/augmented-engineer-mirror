@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import com.it.exalt.belair.domain.commande.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -57,6 +58,7 @@ class CreateCommandeApiTest {
 
         // When / Then
         given()
+            .auth().basic("festivalier", "password")
             .contentType(ContentType.JSON)
             .body(requestBody)
         .when()
@@ -98,6 +100,7 @@ class CreateCommandeApiTest {
 
         // When / Then
         given()
+            .auth().basic("festivalier", "password")
             .contentType(ContentType.JSON)
             .body(requestBody)
         .when()

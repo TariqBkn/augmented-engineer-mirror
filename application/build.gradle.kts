@@ -11,6 +11,12 @@ plugins {
 dependencies {
     implementation(project(":domain"))
     implementation(project(":infrastructure"))
+
+    // Spring Boot
+    implementation("org.springframework.boot:spring-boot-starter-web:3.2.0")
+    implementation("org.springframework.boot:spring-boot-starter-security:3.2.0")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.0")
+    testImplementation("io.rest-assured:rest-assured:5.4.0")
 }
 
 application {
