@@ -148,5 +148,6 @@
     // === Blocked: Dangerous shell patterns ===
     "eval": false,
     "xargs": false
-  }
+  },
+  "github.copilot.chat.cli.customAgents.enabled": true
 }
