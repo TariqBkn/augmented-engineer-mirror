@@ -27,12 +27,26 @@ class CreateCommandeApiTest {
     @MockBean
     private PasserCommandeUseCase passerCommandeUseCase;
 
+    private static final String AUTH_USER = "festivalier";
+    private static final String AUTH_PASSWORD = "password";
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
         RestAssured.basePath = "";
     }
-// Feature API — POST /commandes
+
+    private io.restassured.specification.RequestSpecification requestWithAuth() {
+        return given()
+            .auth().basic(AUTH_USER, AUTH_PASSWORD)
+            .contentType(ContentType.JSON);
+    }
+
+    private io.restassured.specification.RequestSpecification requestWithoutAuth() {
+        return given().contentType(ContentType.JSON);
+    }
+
+    // Feature API — POST /commandes
 
     @Test
     void givenValidFestivalierAndArticles_whenCreateCommande_thenReturns201WithCommandeId() {
@@ -57,9 +71,7 @@ class CreateCommandeApiTest {
             .thenReturn(mockResponse);
 
         // When / Then
-        given()
-            .auth().basic("festivalier", "password")
-            .contentType(ContentType.JSON)
+        requestWithAuth()
             .body(requestBody)
         .when()
             .post("/commandes")
@@ -81,8 +93,7 @@ class CreateCommandeApiTest {
         );
 
         // When / Then
-        given()
-            .contentType(ContentType.JSON)
+        requestWithoutAuth()
             .body(requestBody)
         .when()
             .post("/commandes")
@@ -99,9 +110,7 @@ class CreateCommandeApiTest {
         );
 
         // When / Then
-        given()
-            .auth().basic("festivalier", "password")
-            .contentType(ContentType.JSON)
+        requestWithAuth()
             .body(requestBody)
         .when()
             .post("/commandes")
