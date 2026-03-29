@@ -20,6 +20,7 @@ public class SecurityConfiguration {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/commandes").authenticated()
+                .requestMatchers("/festivaliers/*/commandes/boisson").authenticated()
                 .anyRequest().permitAll()
             )
             .httpBasic(httpBasic -> {});
