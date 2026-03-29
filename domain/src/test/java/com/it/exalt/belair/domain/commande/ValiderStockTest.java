@@ -12,6 +12,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ValiderStockTest {
 
+    private static final String FESTIVALIER_ID = "festivalier-42";
+    private static final String MOJITO_ID = "mojito";
+    private static final String MOJITO_NOM = "Mojito";
+
     private ValiderStockFixture fixture;
 
     @BeforeEach
@@ -22,13 +26,10 @@ class ValiderStockTest {
     @Test
     void givenSufficientStock_whenCreerCommande_thenCommandeCreatedEnAttenteAndStockDecremented() {
         // Given
-        var mojito = new Article("mojito", "Mojito", 10);
+        var mojito = new Article(MOJITO_ID, MOJITO_NOM, 10);
         fixture.stockState().add(mojito);
 
-        var commandeRequest = new CreerCommandeRequest(
-            "festivalier-42",
-            List.of(new LigneCommandeRequest("mojito", 2))
-        );
+        var commandeRequest = creerCommandeRequest(MOJITO_ID, 2);
 
         // When
         var result = fixture.useCase().creerCommande(commandeRequest);
@@ -39,7 +40,7 @@ class ValiderStockTest {
         assertThat(result.commandeId()).isNotEmpty();
 
         // And - stock is decremented by 2
-        var mojitoAfter = fixture.stockState().find("mojito");
+        var mojitoAfter = fixture.stockState().find(MOJITO_ID);
         assertThat(mojitoAfter).isPresent();
         assertThat(mojitoAfter.get().quantiteDisponible()).isEqualTo(8);
     }
@@ -47,21 +48,18 @@ class ValiderStockTest {
     @Test
     void givenInsufficientStock_whenCreerCommande_thenStockInsufficientExceptionThrownAndStockUnchanged() {
         // Given
-        var mojito = new Article("mojito", "Mojito", 1);
+        var mojito = new Article(MOJITO_ID, MOJITO_NOM, 1);
         fixture.stockState().add(mojito);
 
-        var commandeRequest = new CreerCommandeRequest(
-            "festivalier-42",
-            List.of(new LigneCommandeRequest("mojito", 2))
-        );
+        var commandeRequest = creerCommandeRequest(MOJITO_ID, 2);
 
         // When / Then
         assertThatThrownBy(() -> fixture.useCase().creerCommande(commandeRequest))
             .isInstanceOf(StockInsufficientException.class)
-            .hasMessage("Stock insuffisant pour l'article mojito");
+            .hasMessage("Stock insuffisant pour l'article " + MOJITO_ID);
 
         // And - stock is unchanged
-        var mojitoAfter = fixture.stockState().find("mojito");
+        var mojitoAfter = fixture.stockState().find(MOJITO_ID);
         assertThat(mojitoAfter).isPresent();
         assertThat(mojitoAfter.get().quantiteDisponible()).isEqualTo(1);
     }
@@ -71,15 +69,19 @@ class ValiderStockTest {
         // Given
         // Empty catalog - no articles added to stock
 
-        var commandeRequest = new CreerCommandeRequest(
-            "festivalier-42",
-            List.of(new LigneCommandeRequest("champagne", 1))
-        );
+        var commandeRequest = creerCommandeRequest("champagne", 1);
 
         // When / Then
         assertThatThrownBy(() -> fixture.useCase().creerCommande(commandeRequest))
             .isInstanceOf(ArticleUnknownException.class)
             .hasMessage("Article champagne introuvable au catalogue");
+    }
+
+    private CreerCommandeRequest creerCommandeRequest(String articleId, int quantite) {
+        return new CreerCommandeRequest(
+            FESTIVALIER_ID,
+            List.of(new LigneCommandeRequest(articleId, quantite))
+        );
     }
 
     // ==================== Fake Repository for Testing ====================
@@ -180,21 +182,31 @@ class ValiderStockTest {
 
         Commande creerCommande(CreerCommandeRequest request) {
             var ligne = request.lignes().get(0);
-            var article = stockRepository.find(ligne.articleId())
-                .orElseThrow(() -> new ArticleUnknownException("Article " + ligne.articleId() + " introuvable au catalogue"));
+            var article = chargerArticle(ligne.articleId());
+            verifierStockSuffisant(article, ligne);
+            decrementerEtSauvegarder(article, ligne.quantite());
 
+            return new Commande("cmd-1", StatutCommande.EN_ATTENTE);
+        }
+
+        private Article chargerArticle(String articleId) {
+            return stockRepository.find(articleId)
+                .orElseThrow(() -> new ArticleUnknownException("Article " + articleId + " introuvable au catalogue"));
+        }
+
+        private void verifierStockSuffisant(Article article, LigneCommandeRequest ligne) {
             if (article.quantiteDisponible() < ligne.quantite()) {
                 throw new StockInsufficientException("Stock insuffisant pour l'article " + ligne.articleId());
             }
+        }
 
+        private void decrementerEtSauvegarder(Article article, int quantiteCommandee) {
             var articleMaj = new Article(
                 article.id(),
                 article.nom(),
-                article.quantiteDisponible() - ligne.quantite()
+                article.quantiteDisponible() - quantiteCommandee
             );
             stockRepository.sauvegarder(articleMaj);
-
-            return new Commande("cmd-1", StatutCommande.EN_ATTENTE);
         }
     }
 }
