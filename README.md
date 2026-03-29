@@ -79,4 +79,22 @@ Start by following the formation material in the [academy](https://academy.exalt
 
 Read [FEATURES.md](./FEATURES.md) for the list of user stories and acceptance criteria.
 
+## Current State (March 2026)
+
+Recent work has focused on delivering domain-level use cases and tests following a TDD workflow.
+
+- Token balance consultation is available in the domain module with:
+	- `ConsulterSoldeTokensUseCase`
+	- `ConsulterSoldeTokensQuery`
+	- `SoldeTokensFestivalier`
+- Order cancellation is available in the domain module with:
+	- `AnnulerCommandeUseCase`
+	- refund computation for drink and food tokens
+	- cancellation status transition to `ANNULEE`
+- Simple order placement with available stock is covered by a dedicated domain test validating:
+	- successful order creation
+	- stock decrement after order submission
+
+Current scope is primarily domain behavior and domain tests. Application and infrastructure integrations are still progressively implemented per feature.
+
 Happy coding!

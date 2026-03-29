@@ -4,7 +4,18 @@ Welcome to the Bel'Air's Buvette project! This document outlines the key feature
 
 ## Features
 
+## Implementation Snapshot (March 2026)
+
+- Domain progress was recently made on three stories:
+  - Token balance consultation
+  - Order cancellation with token refund
+  - Simple order placement with available stock
+- These increments are currently validated at domain test level.
+- Application API and infrastructure adapters remain to be completed feature by feature.
+
 ### As a festival goer, i want to consult the remaining balance of my tokens
+
+Status: In progress (domain slice implemented)
 
 Rules : 
 - A festival goer has two types of tokens : drink tokens and snack tokens
@@ -15,6 +26,8 @@ Rules :
 - Unspent tokens are not carried over to the next day
 
 ### As a festival goer, i want to place an order for a drink
+
+Status: In progress (simple available-stock scenario covered in domain test)
 
 Rules : 
 - A drink can be either alcoholic or non-alcoholic
@@ -51,6 +64,8 @@ Rules :
 - If the order is already acknowledged, the bartender must be notified of the requested changes
 
 ### As a festival goer, i want to be able to cancel my order
+
+Status: In progress (domain cancellation use case and token refund implemented)
 
 Rules :
 - An order can be canceled only if it has not yet been acknowledged by the bartender
